@@ -6,9 +6,9 @@
       <canvas [style.backgroundImage]="'url(' + selectedBackground + ')'"
               [style.display]="showResult || !selectedBackground ? 'none' : 'block'"
               class="camera_background"
-              id="canvasPerson" width="640" height="480"></canvas>
+              id="canvasPerson" [width]="isVertical ? 480 : 640" [height]="isVertical ? 640 : 480"></canvas>
       <canvas [style.display]="!showResult ? 'none' : 'block'"
-              id="canvasResult" width="640" height="480"></canvas>
+              id="canvasResult" [width]="isVertical ? 480 : 640" [height]="isVertical ? 640 : 480"></canvas>
     </section>
     <aside>
       <img

@@ -15,7 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   bodyPix = require('@tensorflow-models/body-pix');
-  imageBackgrounds: any[] = ['assets/img/windows.png', 'assets/img/ice.png', 'assets/img/summer.png'];
+  imageBackgrounds: any[] = [];
   selectedBackground: string;
   canvas: any = {};
 
@@ -33,6 +33,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   loading: boolean;
   backgroundDarkeningMask = null;
   imgData;
+  isVertical: boolean;
   private untilDestroy: ReplaySubject<boolean> = new ReplaySubject(1);
   @HostListener('window:resize', ['$event']) onResize(event): void {
     this.resizeContent();
@@ -60,15 +61,36 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     this.untilDestroy.complete();
   }
 
+  get width(): number {
+    return this.isVertical ? 480 : 640;
+  }
+
+  get height(): number {
+    return this.isVertical ? 640 : 480;
+  }
+
   resizeContent(): void {
     const height = this.camera.nativeElement.offsetHeight;
     const width = this.camera.nativeElement.offsetWidth;
-    if (width / height < 1.777777777777778) {
-      this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
-      this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
+    this.isVertical = height > width && width < 601;
+    if (this.isVertical) {
+      this.imageBackgrounds = ['assets/img/windows-mobile.png', 'assets/img/ice-mobile.png', 'assets/img/summer-mobile.png'];
+      if (height / width > 1.777777777777778) {
+        this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
+        this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
+      } else {
+        this.renderer.setStyle(this.content.nativeElement, 'width', (height / 1.777777777777778) + 'px');
+        this.renderer.setStyle(this.content.nativeElement, 'height', height + 'px');
+      }
     } else {
-      this.renderer.setStyle(this.content.nativeElement, 'width', (height * 1.777777777777778) + 'px');
-      this.renderer.setStyle(this.content.nativeElement, 'height', (height) + 'px');
+      this.imageBackgrounds = ['assets/img/windows.png', 'assets/img/ice.png', 'assets/img/summer.png'];
+      if (width / height < 1.777777777777778) {
+        this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
+        this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
+      } else {
+        this.renderer.setStyle(this.content.nativeElement, 'width', (height * 1.777777777777778) + 'px');
+        this.renderer.setStyle(this.content.nativeElement, 'height', height + 'px');
+      }
     }
   }
 
@@ -127,7 +149,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   shot(): void {
     const ctx = this.canvasResult.getContext('2d');
     ctx.drawImage(this.video.nativeElement, 0, 0);
-    this.imgData = ctx.getImageData(0, 0, 640, 480);
+    this.imgData = ctx.getImageData(0, 0, this.width, this.height);
     this.loading = true;
     this.loadImage().then(r => {
       this.showResult = true;
@@ -146,7 +168,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showResult = false;
     this.imgData = null;
     const ctx = this.canvasResult.getContext('2d');
-    ctx.clearRect(0, 0, 640, 480);
+    ctx.clearRect(0, 0, this.width, this.height);
   }
 
   async loadImage(): Promise<any> {
@@ -185,9 +207,9 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     ctx.globalCompositeOperation = 'source-in';
     createImageBitmap(this.imgData).then(imgBitmap => {
       ctx.drawImage(imgBitmap, 0, 0);
-      this.imgData = ctx.getImageData(0, 0, 640, 480);
+      this.imgData = ctx.getImageData(0, 0, this.width, this.height);
       ctx.putImageData(this.imgData, 0, 0);
-      const background = new Image();
+      const background = new Image(this.width, this.height);
       background.src = this.selectedBackground;
       background.onload = () => {
         ctx.globalCompositeOperation = 'destination-over';
