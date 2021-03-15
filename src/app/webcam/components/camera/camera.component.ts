@@ -44,19 +44,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // Safari and Edge polyfill for createImageBitmap
-    if (!('createImageBitmap' in window)) {
-      // @ts-ignore
-      window.createImageBitmap = async function(blob) {
-        return new Promise((resolve,reject) => {
-          const img = document.createElement('img');
-          img.addEventListener('load', function() {
-            resolve(this);
-          });
-          img.src = URL.createObjectURL(blob);
-        });
-      };
-    }
   }
 
   ngAfterViewInit(): void {
