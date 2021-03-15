@@ -108,6 +108,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
         intervalObs.pipe(
           takeUntil(this.untilDestroy)
         ).subscribe(async () => {
+          const createImageBitmap2 = createImageBitmap.bind({});
           if (this.selectedBackground) {
             const segmentation = await net.segmentPerson(this.video.nativeElement, {
               flipHorizontal: false,
@@ -120,7 +121,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
             this.contextPerson.globalCompositeOperation = 'destination-over';
             this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
             this.contextPerson.globalCompositeOperation = 'source-in';
-            createImageBitmap(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
+            createImageBitmap2(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
           }
         });
       });
