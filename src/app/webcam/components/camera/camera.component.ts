@@ -15,7 +15,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   bodyPix = require('@tensorflow-models/body-pix');
-  imageBackgrounds: any[] = [];
+  imageBackgrounds: any[] = ['assets/img/img-1.jpg', 'assets/img/img-2.jpg', 'assets/img/img-3.jpg'];
   selectedBackground: string;
   canvas: any = {};
 
@@ -44,6 +44,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.selectedBackground = this.imageBackgrounds[0];
   }
 
   ngAfterViewInit(): void {
@@ -74,21 +75,19 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = this.camera.nativeElement.offsetWidth;
     this.isVertical = height > width && width < 601;
     if (this.isVertical) {
-      this.imageBackgrounds = ['assets/img/img-1.jpg', 'assets/img/img-2.jpg', 'assets/img/img-3.jpg'];
-      if (height / width > 1.333333333334) {
+      if (height / width > 1.333333333333333) {
         this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
         this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
       } else {
-        this.renderer.setStyle(this.content.nativeElement, 'width', (height / 1.777777777777778) + 'px');
+        this.renderer.setStyle(this.content.nativeElement, 'width', (height / 1.333333333333333) + 'px');
         this.renderer.setStyle(this.content.nativeElement, 'height', height + 'px');
       }
     } else {
-      this.imageBackgrounds = ['assets/img/img-1.jpg', 'assets/img/img-2.jpg', 'assets/img/img-3.jpg'];
-      if (width / height < 1.777777777777778) {
+      if (width / height < 1.333333333333333) {
         this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
         this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
       } else {
-        this.renderer.setStyle(this.content.nativeElement, 'width', (height * 1.777777777777778) + 'px');
+        this.renderer.setStyle(this.content.nativeElement, 'width', (height * 1.333333333333333) + 'px');
         this.renderer.setStyle(this.content.nativeElement, 'height', height + 'px');
       }
     }
@@ -209,12 +208,12 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
       ctx.drawImage(imgBitmap, 0, 0);
       this.imgData = ctx.getImageData(0, 0, this.width, this.height);
       ctx.putImageData(this.imgData, 0, 0);
-      const background = new Image(this.width, this.height);
+      const background = new Image();
       background.src = this.selectedBackground;
       background.onload = () => {
         ctx.globalCompositeOperation = 'destination-over';
         // ctx.filter = 'blur(2px)';
-        ctx.drawImage(background, 0, 0);
+        ctx.drawImage(background, 0, 0, 480, 480);
       };
     });
   }

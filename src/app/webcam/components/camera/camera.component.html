@@ -2,13 +2,13 @@
   <div class="camera_content" #content>
     <section>
       <video id="video" autoplay loop muted playsinline
-             #video [style.display]="selectedBackground ? 'none' : 'block'"></video>
+             #video [style.display]="'none'"></video>
       <canvas [style.backgroundImage]="'url(' + selectedBackground + ')'"
               [style.display]="showResult || !selectedBackground ? 'none' : 'block'"
               class="camera_background"
-              id="canvasPerson" [width]="isVertical ? 480 : 640" [height]="isVertical ? 640 : 480"></canvas>
+              id="canvasPerson" [width]="480" [height]="480"></canvas>
       <canvas [style.display]="!showResult ? 'none' : 'block'"
-              id="canvasResult" [width]="isVertical ? 480 : 640" [height]="isVertical ? 640 : 480"></canvas>
+              id="canvasResult" [width]="480" [height]="480"></canvas>
     </section>
     <aside>
       <img
