@@ -104,26 +104,24 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
           multiplier: 0.75,
           quantBytes: 2
         });
-        const intervalObs = interval(100);
-        intervalObs.pipe(
-          takeUntil(this.untilDestroy)
-        ).subscribe(async () => {
-          const createImageBitmap2 = createImageBitmap.bind({});
+        const createImageBitmap2 = createImageBitmap.bind({});
+        setInterval(async () => {
           if (this.selectedBackground) {
-            const segmentation = await net.segmentPerson(this.video.nativeElement, {
+            net.segmentPerson(this.video.nativeElement, {
               flipHorizontal: false,
               internalResolution: 'medium',
               segmentationThreshold: 0.7
+            }).then(segmentation => {
+              const foregroundColor = { r: 0, g: 0, b: 0, a: 255 };
+              const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
+              const backgroundDarkeningMask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor, false);
+              this.contextPerson.globalCompositeOperation = 'destination-over';
+              this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
+              this.contextPerson.globalCompositeOperation = 'source-in';
+              createImageBitmap2(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
             });
-            const foregroundColor = { r: 0, g: 0, b: 0, a: 255 };
-            const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
-            const backgroundDarkeningMask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor, false);
-            this.contextPerson.globalCompositeOperation = 'destination-over';
-            this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
-            this.contextPerson.globalCompositeOperation = 'source-in';
-            createImageBitmap2(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
           }
-        });
+        }, 100);
       });
   }
   private getMediaStream(): Promise<MediaStream> {
