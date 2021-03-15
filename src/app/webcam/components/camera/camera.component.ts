@@ -74,8 +74,8 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     const width = this.camera.nativeElement.offsetWidth;
     this.isVertical = height > width && width < 601;
     if (this.isVertical) {
-      this.imageBackgrounds = ['assets/img/windows-mobile.png', 'assets/img/ice-mobile.png', 'assets/img/summer-mobile.png'];
-      if (height / width > 1.777777777777778) {
+      this.imageBackgrounds = ['assets/img/img-1.jpg', 'assets/img/img-2.jpg', 'assets/img/img-3.jpg'];
+      if (height / width > 1.333333333334) {
         this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
         this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
       } else {
@@ -83,7 +83,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
         this.renderer.setStyle(this.content.nativeElement, 'height', height + 'px');
       }
     } else {
-      this.imageBackgrounds = ['assets/img/windows.png', 'assets/img/ice.png', 'assets/img/summer.png'];
+      this.imageBackgrounds = ['assets/img/img-1.jpg', 'assets/img/img-2.jpg', 'assets/img/img-3.jpg'];
       if (width / height < 1.777777777777778) {
         this.renderer.setStyle(this.content.nativeElement, 'width', 'inherit');
         this.renderer.setStyle(this.content.nativeElement, 'height', 'inherit');
@@ -121,7 +121,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
             this.contextPerson.globalCompositeOperation = 'destination-over';
             this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
             this.contextPerson.globalCompositeOperation = 'source-in';
-            this.contextPerson.drawImage(this.video.nativeElement, 0, 0)
+            this.contextPerson.drawImage(this.video.nativeElement, 0, 0);
           }
         });
       });
