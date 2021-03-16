@@ -94,33 +94,36 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async initVideo(e): Promise<any> {
+    console.log('initVideo');
     this.getMediaStream()
       .then(async (stream) => {
         this.stream = stream;
         this.streaming = true;
+        console.log('streaming');
         const net = await bodyPix.load({
           architecture: 'MobileNetV1',
           outputStride: 16,
           multiplier: 0.75,
           quantBytes: 2
         });
+        let test = null;
         const createImageBitmap2 = createImageBitmap.bind({});
         setInterval(async () => {
-          if (this.selectedBackground) {
-            net.segmentPerson(this.video.nativeElement, {
-              flipHorizontal: false,
-              internalResolution: 'medium',
-              segmentationThreshold: 0.7
-            }).then(segmentation => {
-              const foregroundColor = { r: 0, g: 0, b: 0, a: 255 };
-              const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
-              const backgroundDarkeningMask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor, false);
-              this.contextPerson.globalCompositeOperation = 'destination-over';
-              this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
-              this.contextPerson.globalCompositeOperation = 'source-in';
-              createImageBitmap2(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
-            });
-          }
+          console.log(test === this.video.nativeElement);
+          test = this.video.nativeElement;
+          net.segmentPerson(this.video.nativeElement, {
+            flipHorizontal: false,
+            internalResolution: 'medium',
+            segmentationThreshold: 0.7
+          }).then(segmentation => {
+            const foregroundColor = { r: 0, g: 0, b: 0, a: 255 };
+            const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
+            const backgroundDarkeningMask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor, false);
+            this.contextPerson.globalCompositeOperation = 'destination-over';
+            this.contextPerson.putImageData(backgroundDarkeningMask, 0, 0);
+            this.contextPerson.globalCompositeOperation = 'source-in';
+            createImageBitmap2(this.video.nativeElement).then(imgBitmap => this.contextPerson.drawImage(imgBitmap, 0, 0));
+          });
         }, 100);
       });
   }
